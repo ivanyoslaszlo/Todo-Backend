@@ -28,26 +28,30 @@ public class LoginController {
 
         String result = userService.loginUser(username, password, session);
 
-        if ("user".equals(result)) {
-
-            session.setAttribute("user",username);
-            return ResponseEntity.ok(Map.of("role", "User"));
-
-        }
-
-        if ("admin".equals(result)) {
-            return ResponseEntity.ok(Map.of("role", "Admin"));
-        }
-
-        if ("Hibás jelszó!".equals(result)) {
-            return ResponseEntity.status(401).body(Map.of("message", "Hibás jelszó!"));
-        }
 
         if ("Nincs ilyen felhasználó!".equals(result)) {
+
             return ResponseEntity.status(404).body(Map.of("message", "Nincs ilyen felhasználó!"));
+
+        } else if ("Hibás jelszó!".equals(result)) {
+
+            return ResponseEntity.status(401).body(Map.of("message", "Hibás jelszó!"));
+
+        } else if (result.equals("user")) {
+
+            return ResponseEntity.ok(Map.of("role", "User"));
+
+        } else if (result.equals("admin")) {
+
+            return ResponseEntity.ok(Map.of("role", "admin"));
+
+        } else{
+
+            return ResponseEntity.badRequest().body(Map.of("message", "Ismeretlen hiba"));
         }
 
-        return ResponseEntity.badRequest().body(Map.of("message", "Ismeretlen hiba"));
+
+
     }
 
 
@@ -56,8 +60,6 @@ public class LoginController {
         session.invalidate();
         return ResponseEntity.ok(Map.of("message", "Sikeres kilépés"));
     }
-
-
 
 
 }
