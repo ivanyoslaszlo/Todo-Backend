@@ -53,7 +53,7 @@ public class UserService {
 
         }
 
-        if (userRepository.is_admin(user.getUsername())) {
+        if (userRepository.is_admin(session)) {
             return "admin";
         } else {
             return "user";

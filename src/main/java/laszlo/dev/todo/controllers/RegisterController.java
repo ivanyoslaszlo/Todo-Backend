@@ -4,6 +4,7 @@ import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -19,7 +20,7 @@ public class RegisterController {
 
     }
 
-    @PostMapping("/register")
+    @PostMapping("/api/register")
     public String register_user(@RequestBody Users users) {
 
       if (userService.registerUser(users))

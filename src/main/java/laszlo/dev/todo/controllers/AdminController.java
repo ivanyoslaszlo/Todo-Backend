@@ -3,6 +3,7 @@ package laszlo.dev.todo.controllers;
 import jakarta.servlet.http.HttpSession;
 import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.repository.NotesRepository;
+import laszlo.dev.todo.repository.UserRepository;
 import laszlo.dev.todo.service.NotesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,18 +19,20 @@ public class AdminController {
 
     NotesService notesService;
     NotesRepository notesRepository;
+    UserRepository userRepository;
 
-    public AdminController(NotesService notesService,NotesRepository notesRepository){
+    public AdminController(NotesService notesService,NotesRepository notesRepository,UserRepository userRepository){
         this.notesService=notesService;
         this.notesRepository=notesRepository;
+        this.userRepository=userRepository;
     }
 
-    @GetMapping("/user_notes")
+    @GetMapping("/api/user_notes")
     public ResponseEntity<?> user_details(HttpSession session){
 
-        if (session.getAttribute("user")==null ){
+        if (!userRepository.is_admin(session)){
 
-            return ResponseEntity.status(401).body("Nem vagy admin nincs jogod lekérni!!");
+            return ResponseEntity.status(403).body("Nem vagy admin nincs jogod lekérni!!");
 
         }else {
 

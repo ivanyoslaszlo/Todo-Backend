@@ -1,4 +1,5 @@
 package laszlo.dev.todo.repository;
+import jakarta.servlet.http.HttpSession;
 import laszlo.dev.todo.entities.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -109,7 +110,8 @@ import java.util.List;
 
 
 
-        public boolean is_admin(String username){
+        public boolean is_admin(HttpSession session){
+            String username=(String)session.getAttribute("user");
             try(
                     Connection connection=DriverManager.getConnection("jdbc:sqlite:user.datas.db");
 

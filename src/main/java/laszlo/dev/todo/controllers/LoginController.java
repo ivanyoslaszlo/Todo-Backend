@@ -21,7 +21,7 @@ public class LoginController {
         this.userService = userService;
     }
 
-    @PostMapping("/")
+    @PostMapping("/api/")
     public ResponseEntity<?> loginMethod(@RequestBody Map<String, String> payload, HttpSession session, HttpServletRequest request) {
         String username = payload.get("username");
         String password = payload.get("password");
@@ -55,7 +55,7 @@ public class LoginController {
     }
 
 
-    @PostMapping("/kilepes")
+    @PostMapping("/api/kilepes")
     public ResponseEntity<?> logoutMethod(HttpSession session) {
         session.invalidate();
         return ResponseEntity.ok(Map.of("message", "Sikeres kilépés"));

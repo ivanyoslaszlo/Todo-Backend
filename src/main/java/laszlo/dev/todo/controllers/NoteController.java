@@ -27,7 +27,7 @@ public class NoteController {
         this.notesService = notesService;
     }
 
-    @PostMapping("/note")
+    @PostMapping("/api/note")
     public ResponseEntity<?> jegyzet_keszites(@RequestBody Map<String, String> data, HttpSession session) {
 
         String note = data.get("note");
@@ -35,14 +35,14 @@ public class NoteController {
     }
 
 
-    @GetMapping("/note")
+    @GetMapping("/api/note")
     public ResponseEntity<?> jegyzet_lekeres(HttpSession session) {
 
         return notesService.jegyzet_lekérés(session);
     }
 
 
-    @DeleteMapping("/note")
+    @DeleteMapping("/api/note")
     public ResponseEntity<?> jegyzet_torles_adatbazisbol(@RequestBody List<String> notes, HttpSession session) {
 
         return notesService.jegyezttörlés_adatbázisbol(session, notes);
