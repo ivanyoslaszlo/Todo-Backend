@@ -47,6 +47,10 @@ public class Users {
         this.role = role;
     }
 
+    public void setNotes(List<String> notes) {
+        this.notes = notes;
+    }
+
     public void setLastLogin(String lastLogin) {
         this.lastLogin = lastLogin;
     }

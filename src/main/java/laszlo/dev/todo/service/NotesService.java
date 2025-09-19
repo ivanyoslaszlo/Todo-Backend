@@ -1,6 +1,7 @@
 package laszlo.dev.todo.service;
 
 import jakarta.servlet.http.HttpSession;
+import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.repository.NotesRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -58,4 +59,16 @@ public class NotesService {
             return  ResponseEntity.status(500).body("Internal error");
         }
     }
+
+    public List<Users> getAlluserwithNotes(){
+
+        List<Users> users= notesRepository.findAll_user();
+
+        for (Users user: users){
+
+            user.setNotes(notesRepository.getNotes(user.getUsername()));
+        }
+        return users;
+    }
+
 }
