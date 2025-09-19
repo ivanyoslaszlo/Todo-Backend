@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "http://127.0.0.1:5500", allowCredentials = "true")
+
 public class LoginController {
 
     private final UserService userService;
@@ -22,7 +22,7 @@ public class LoginController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> payload, HttpSession session, HttpServletRequest request) {
+    public ResponseEntity<?> loginMethod(@RequestBody Map<String, String> payload, HttpSession session, HttpServletRequest request) {
         String username = payload.get("username");
         String password = payload.get("password");
 
@@ -56,7 +56,7 @@ public class LoginController {
 
 
     @PostMapping("/kilepes")
-    public ResponseEntity<?> logout(HttpSession session) {
+    public ResponseEntity<?> logoutMethod(HttpSession session) {
         session.invalidate();
         return ResponseEntity.ok(Map.of("message", "Sikeres kilépés"));
     }

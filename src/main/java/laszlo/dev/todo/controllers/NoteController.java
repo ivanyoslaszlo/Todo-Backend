@@ -1,4 +1,5 @@
 package laszlo.dev.todo.controllers;
+
 import laszlo.dev.todo.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -28,7 +29,7 @@ public class NoteController {
             return "nincs belépve senki";
         }
         if (userRepository.createNote(username, note)) {
-            return "Jegyzet létre hozva"+": "+ session.getAttribute("user");
+            return "Jegyzet létre hozva" + ": " + session.getAttribute("user");
         } else {
             return "a mentés elhasalt";
         }
@@ -36,4 +37,28 @@ public class NoteController {
     }
 
 
+    @GetMapping("/note")
+    public List<String> jegyzet_lekeres(HttpSession session) {
+        String user = (String) session.getAttribute("user");
+
+        return userRepository.getNotes(user);
+    }
+
+
+    @DeleteMapping("/note")
+    public String jegyzet_torles_adatbazisbol(@RequestBody List<String> notes, HttpSession session) {
+
+        String user = (String) session.getAttribute("user");
+
+        if (user == null) {
+            return "nincs belépve senki törlés meg tagadva";
+
+        } else if (userRepository.deleteNotes(notes, user)) {
+            return "torles sikeres";
+
+        } else {
+            return "torles sikeretelen";
+        }
+
+    }
 }

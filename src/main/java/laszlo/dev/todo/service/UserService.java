@@ -35,24 +35,23 @@ public class UserService {
     }
 
     public String loginUser(String username, String password, HttpSession session) {
+
         Users user = userRepository.findByUsername(username);
 
         if (user == null) {
             return "Nincs ilyen felhasználó!";
-        }
 
-        if (!userRepository.check_password(password, user.getPassword())) {
+        } else if (!userRepository.check_password(password, user.getPassword())) {
+
             return "Hibás jelszó!";
+        } else if (userRepository.check_password(password, user.getPassword())) {
+
+            session.setAttribute("user", user.getUsername());
+            session.setAttribute("login_time", LocalDateTime.now().withNano(0));
+            System.out.println("Bejelentkezett: " + user.getUsername() + " " + session.getAttribute("login_time"));
+            userRepository.updateLastLogin(user.getUsername());
+
         }
-
-
-        session.setAttribute("user", user.getUsername());
-        session.setAttribute("login_time", LocalDateTime.now().withNano(0));
-
-        userRepository.updateLastLogin(user.getUsername());
-
-        System.out.println("Bejelentkezett: " + user.getUsername() +
-                " " + session.getAttribute("login_time"));
 
         if (userRepository.is_admin(user.getUsername())) {
             return "admin";
@@ -60,4 +59,5 @@ public class UserService {
             return "user";
         }
     }
+
 }

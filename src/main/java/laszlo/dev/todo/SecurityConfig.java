@@ -17,12 +17,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults())      // engedjük a CORS-ot
-                .csrf(csrf -> csrf.disable())        // REST API-hoz kikapcsoljuk
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()    // minden endpoint szabad
+                        .anyRequest().permitAll()
                 )
-                .formLogin(form -> form.disable())   // ne legyen Spring login form
+                .formLogin(form -> form.disable())
                 .logout(logout -> logout.permitAll());
 
         return http.build();
@@ -33,13 +33,13 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
-                "http://127.0.0.1:5500",   // VS Code Live Server
-                "http://localhost:5500"    // ha localhost-on nyitod
+                "http://127.0.0.1:5500",
+                "http://localhost:5500"
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true); // fontos a cookie-hoz
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
