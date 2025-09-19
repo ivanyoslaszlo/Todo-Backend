@@ -1,5 +1,6 @@
 package laszlo.dev.todo.controllers;
 
+import laszlo.dev.todo.repository.NotesRepository;
 import laszlo.dev.todo.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -15,9 +16,11 @@ public class NoteController {
 
 
     UserRepository userRepository;
+    NotesRepository notesRepository;
 
-    public NoteController(UserRepository userRepository) {
+    public NoteController(UserRepository userRepository,NotesRepository notesRepository) {
         this.userRepository = userRepository;
+        this.notesRepository=notesRepository;
     }
 
     @PostMapping("/note")
@@ -28,7 +31,7 @@ public class NoteController {
         if (username == null) {
             return "nincs belépve senki";
         }
-        if (userRepository.createNote(username, note)) {
+        if (notesRepository.createNote(username, note)) {
             return "Jegyzet létre hozva" + ": " + session.getAttribute("user");
         } else {
             return "a mentés elhasalt";
@@ -41,7 +44,7 @@ public class NoteController {
     public List<String> jegyzet_lekeres(HttpSession session) {
         String user = (String) session.getAttribute("user");
 
-        return userRepository.getNotes(user);
+        return notesRepository.getNotes(user);
     }
 
 
@@ -53,7 +56,7 @@ public class NoteController {
         if (user == null) {
             return "nincs belépve senki törlés meg tagadva";
 
-        } else if (userRepository.deleteNotes(notes, user)) {
+        } else if (notesRepository.deleteNotes(notes, user)) {
             return "torles sikeres";
 
         } else {
