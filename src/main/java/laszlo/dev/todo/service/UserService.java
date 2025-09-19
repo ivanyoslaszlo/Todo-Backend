@@ -17,21 +17,21 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public String registerUser(Users user) {
+    public boolean registerUser(Users user) {
         if (user.getUsername() == null || user.getUsername().trim().isEmpty() ||
                 user.getEmail() == null || user.getEmail().trim().isEmpty() ||
                 user.getPassword() == null || user.getPassword().trim().isEmpty()) {
-            return "Hiba: minden mező kitöltése kötelező!";
+            return false;
         }
 
         if (userRepository.check_username(user.getUsername())) {
-            return "Hiba: foglalt felhasználónév!";
+            return false;
         }
 
         user.setPassword(userRepository.password_hash(user.getPassword()));
         userRepository.save(user);
 
-        return "Sikeres regisztráció: " + user.getUsername();
+        return true;
     }
 
     public String loginUser(String username, String password, HttpSession session) {

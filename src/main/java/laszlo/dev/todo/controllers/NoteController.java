@@ -34,7 +34,7 @@ public class NoteController {
         if (notesRepository.createNote(username, note)) {
             return "Jegyzet létre hozva" + ": " + session.getAttribute("user");
         } else {
-            return "a mentés elhasalt";
+            return "a mentés sikertelen";
         }
 
     }
