@@ -7,10 +7,12 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RequestMapping("/api")
 @RestController
 
 public class LoginController {
@@ -21,12 +23,13 @@ public class LoginController {
         this.userService = userService;
     }
 
-    @PostMapping("/api/")
+    @PostMapping("/login")
     public ResponseEntity<?> loginMethod(@RequestBody Map<String, String> payload, HttpSession session, HttpServletRequest request) {
         String username = payload.get("username");
         String password = payload.get("password");
 
         String result = userService.loginUser(username, password, session);
+
 
 
         if ("Nincs ilyen felhasználó!".equals(result)) {
@@ -39,7 +42,7 @@ public class LoginController {
 
         } else if (result.equals("user")) {
 
-            return ResponseEntity.ok(Map.of("role", "User"));
+            return ResponseEntity.ok(Map.of("role", "user"));
 
         } else if (result.equals("admin")) {
 
@@ -55,8 +58,9 @@ public class LoginController {
     }
 
 
-    @PostMapping("/api/kilepes")
+    @PostMapping("/kilepes")
     public ResponseEntity<?> logoutMethod(HttpSession session) {
+        System.out.println("Kilépet: "+session.getAttribute("user")+ LocalDateTime.now().withNano(0));
         session.invalidate();
         return ResponseEntity.ok(Map.of("message", "Sikeres kilépés"));
     }

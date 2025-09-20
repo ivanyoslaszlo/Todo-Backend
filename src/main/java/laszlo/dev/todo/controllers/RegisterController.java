@@ -11,6 +11,7 @@ import java.util.Map;
 
 
 @RestController
+@RequestMapping("/api")
 public class RegisterController {
 
     UserService userService;
@@ -20,7 +21,7 @@ public class RegisterController {
 
     }
 
-    @PostMapping("/api/register")
+    @PostMapping("/register")
     public String register_user(@RequestBody Users users) {
 
       if (userService.registerUser(users))

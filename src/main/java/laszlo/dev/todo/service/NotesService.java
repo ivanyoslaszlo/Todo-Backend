@@ -53,7 +53,7 @@ public class NotesService {
             return ResponseEntity.status(403).body("Nincs jogod törölni nem vagy belépve!");
 
         } else if (notesRepository.deleteNotes(notes, user)) {
-            return ResponseEntity.ok("ok");
+            return ResponseEntity.ok("Törlés sikeres");
 
         } else {
             return  ResponseEntity.status(500).body("Internal error");

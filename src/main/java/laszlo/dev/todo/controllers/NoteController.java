@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+
 @RestController
+@RequestMapping("/api")
 public class NoteController {
 
 
@@ -27,7 +29,7 @@ public class NoteController {
         this.notesService = notesService;
     }
 
-    @PostMapping("/api/note")
+    @PostMapping("/note")
     public ResponseEntity<?> jegyzet_keszites(@RequestBody Map<String, String> data, HttpSession session) {
 
         String note = data.get("note");
@@ -35,14 +37,14 @@ public class NoteController {
     }
 
 
-    @GetMapping("/api/note")
+    @GetMapping("/note")
     public ResponseEntity<?> jegyzet_lekeres(HttpSession session) {
 
         return notesService.jegyzet_lekérés(session);
     }
 
 
-    @DeleteMapping("/api/note")
+    @DeleteMapping("/note")
     public ResponseEntity<?> jegyzet_torles_adatbazisbol(@RequestBody List<String> notes, HttpSession session) {
 
         return notesService.jegyezttörlés_adatbázisbol(session, notes);
