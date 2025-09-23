@@ -60,4 +60,16 @@ public class UserService {
         }
     }
 
+    public boolean reset_password(String username,String password){
+
+        if ( userRepository.reset_password(username,password)){
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
 }
+

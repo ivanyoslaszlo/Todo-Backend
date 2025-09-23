@@ -74,7 +74,28 @@ import java.util.List;
             }
         }
 
+        public boolean reset_password(String username,String password){
+            String sql="update users set password=? where username =?";
+            try (
+                Connection connection= DriverManager.getConnection(url);
+                PreparedStatement preparedStatement=connection.prepareStatement(sql);
 
+            ){
+               String hashed_password= password_hash(password);
+
+                preparedStatement.setString(1,hashed_password);
+                preparedStatement.setString(2,username);
+
+                int modositott_sorok= preparedStatement.executeUpdate();;
+
+                return modositott_sorok>0;
+            }
+            catch (SQLException exception){
+                System.out.println(exception);
+
+                throw new RuntimeException();
+            }
+        }
         public String password_hash(String password){
 
             return encoder.encode(password);
