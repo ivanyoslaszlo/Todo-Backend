@@ -46,18 +46,13 @@ public class RegisterController {
     public ResponseEntity<?> reset_password(@RequestBody Map<String, String> data, HttpSession session) {
 
         String logged_in_user=(String) session.getAttribute("user");
-        String username = data.get("username");
         String password = data.get("password");
 
         if (logged_in_user == null) {
             return ResponseEntity.status(401).body("Nem vagy bejelentkezve!");
         }
 
-        if (!logged_in_user.equals(username)){
-            return ResponseEntity.status(403).body("Nincs jogod más jelszavát modositani!");
-        }
-
-        if (userService.reset_password(username, password)) {
+        if (userService.reset_password(logged_in_user, password)) {
             return ResponseEntity.ok("Sikeres jelszó reset");
         } else {
             return ResponseEntity.status(500).body("Hiba");

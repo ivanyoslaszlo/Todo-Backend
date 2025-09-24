@@ -20,3 +20,9 @@ dist/
 Thumbs.db
 desktop.ini
 .env
+.mvn/
+mvnw
+mvnw.cmd
+HELP.md
+.gitattributes
+
