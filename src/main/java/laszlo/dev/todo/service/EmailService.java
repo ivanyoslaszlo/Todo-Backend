@@ -1,5 +1,6 @@
 package laszlo.dev.todo.service;
 
+import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,14 @@ public class EmailService {
                     + "Most már be tudsz jelentkezni.\n\n"
                     + "Üdv,\nTodoApp csapat");
 
-          mailSender.send(message);
+            try {
+                mailSender.send(message);
+                System.out.println("Email kiküldve!");
+            }catch (Exception e){
+                System.out.println("hiba az email küldésekor: "+e);
+            }
+
+
 
         }
 
