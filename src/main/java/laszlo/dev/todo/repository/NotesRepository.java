@@ -1,8 +1,11 @@
 package laszlo.dev.todo.repository;
 
 import laszlo.dev.todo.entities.Users;
+import laszlo.dev.todo.service.UserService;
 import org.apache.catalina.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,36 +14,51 @@ import java.util.List;
 @Repository
 public class NotesRepository {
 
-    private final String url = "jdbc:sqlite:user.datas.db";
+    @Autowired
+    UserRepository userRepository;
+
+
+    private Connection getConnection() throws SQLException {
+
+         final String url = "jdbc:mysql://localhost:3306/user_datas";
+         String username = "laci";
+         String password = "laci";
+
+        return DriverManager.getConnection(url, username, password);
+    }
+
 
     public boolean createNote(String username, String content) {
-        String sql = "INSERT INTO notes (username, content) VALUES (?, ?)";
-        try (Connection connection = DriverManager.getConnection(url);
+        String sql = "INSERT INTO notes (content, user_id) VALUES (?, ?)";
+        try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, username);
-            ps.setString(2, content);
-            ps.executeUpdate();
-            return true;
+            ps.setString(1, content);
+            ps.setInt(2, userRepository.get_userID(username));
+
+            int succes = ps.executeUpdate();
+            if (succes > 0) {
+                return true;
+            }
+
+
         } catch (SQLException e) {
             System.out.println("Hiba a jegyzet mentése közben: " + e.getMessage());
 
-            return false;
 
         }
-
+        return false;
     }
-
 
     public List<String> getNotes(String username) {
 
         List<String> notes = new ArrayList<>();
+        int id = userRepository.get_userID(username);
 
-        String url = "jdbc:sqlite:user.datas.db";
-        String sql = "SELECT content FROM notes WHERE username = ?";
+        String sql = "SELECT content FROM notes WHERE user_id = ?";
 
-        try (Connection connection = DriverManager.getConnection(url);
+        try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, username);
+            ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -54,18 +72,18 @@ public class NotesRepository {
 
     }
 
-
     public boolean deleteNotes(List<String> contents, String username) {
-        String url = "jdbc:sqlite:user.datas.db";
-        String sql = "DELETE FROM notes WHERE username = ? AND content = ?";
+
+        int id = userRepository.get_userID(username);
+        String sql = "DELETE FROM notes WHERE user_id = ? AND content = ?";
 
         int totalDeleted = 0;
 
 
-        try (Connection connection = DriverManager.getConnection(url)) {
+        try (Connection connection = getConnection()) {
             for (String content : contents) {
                 try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                    ps.setString(1, username);
+                    ps.setInt(1, id);
                     ps.setString(2, content);
                     totalDeleted += ps.executeUpdate();
                 }
@@ -83,34 +101,5 @@ public class NotesRepository {
 
     }
 
-    public List<Users> findAll_user() {
-
-        String sql = "SELECT * from users;";
-        List<Users> users_list = new ArrayList<>();
-        try (
-                Connection connection = DriverManager.getConnection(url);
-                PreparedStatement ps = connection.prepareStatement(sql);
-                ResultSet resultSet = ps.executeQuery()) {
-
-
-            while (resultSet.next()) {
-
-                Users users = new Users();
-                users.setUsername(resultSet.getString("username"));
-                users.setEmail(resultSet.getString("email"));
-                users.setRole(resultSet.getString("role"));
-                users.setLastLogin(resultSet.getString("last_login"));
-                users.setRegisteredAt(resultSet.getString("registered_at"));
-                users_list.add(users);
-            }
-
-
-        } catch (SQLException e) {
-
-            throw new RuntimeException("Hiba a felhasználók lekérdezése közben!");
-        }
-
-        return users_list;
-    }
 
 }

@@ -7,6 +7,7 @@ import laszlo.dev.todo.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import laszlo.dev.todo.repository.UserRepository;
 import laszlo.dev.todo.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,15 +20,9 @@ import java.util.Map;
 public class NoteController {
 
 
-    UserRepository userRepository;
-    NotesRepository notesRepository;
+    @Autowired
     NotesService notesService;
 
-    public NoteController(UserRepository userRepository, NotesRepository notesRepository, NotesService notesService) {
-        this.userRepository = userRepository;
-        this.notesRepository = notesRepository;
-        this.notesService = notesService;
-    }
 
     @PostMapping("/note")
     public ResponseEntity<?> jegyzet_keszites(@RequestBody Map<String, String> data, HttpSession session) {

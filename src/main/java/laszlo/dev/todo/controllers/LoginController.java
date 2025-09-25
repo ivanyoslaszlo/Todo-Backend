@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 @RestController
 
 public class LoginController {
+
 
     private final UserService userService;
 
@@ -36,7 +38,13 @@ public class LoginController {
 
             return ResponseEntity.status(404).body(Map.of("message", "Nincs ilyen felhasználó!"));
 
-        } else if ("Hibás jelszó!".equals(result)) {
+        } else if (userService.checkIfBanned(username))
+        {
+            return ResponseEntity.status(403).body(Map.of("message","A fiókód levan titlva"));
+
+        }
+
+        else if ("Hibás jelszó!".equals(result)) {
 
             return ResponseEntity.status(401).body(Map.of("message", "Hibás jelszó!"));
 

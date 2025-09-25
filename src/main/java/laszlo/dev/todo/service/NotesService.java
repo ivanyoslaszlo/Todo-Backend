@@ -3,6 +3,8 @@ package laszlo.dev.todo.service;
 import jakarta.servlet.http.HttpSession;
 import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.repository.NotesRepository;
+import laszlo.dev.todo.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -11,41 +13,49 @@ import java.util.List;
 @Service
 public class NotesService {
 
-    NotesRepository notesRepository;
 
-    public NotesService(NotesRepository notesRepository){
-        this.notesRepository=notesRepository;
+    @Autowired
+    NotesRepository notesRepository;
+    @Autowired
+    UserRepository userRepository;
+
+
+
+
+    public boolean letezo_user(String username) {
+        return username != null && userRepository.findByUsername(username) != null;
     }
 
-    public ResponseEntity<?> jegyzet_keszites( String note,HttpSession session){
+    public ResponseEntity<?> jegyzet_keszites(String note, HttpSession session) {
 
-        String username=(String) session.getAttribute("user");
+        String username = (String) session.getAttribute("user");
 
-        if (username == null) {
-            return  ResponseEntity.status(401).body("Nem vagy belépve");
+        if (!letezo_user(username)) {
+            session.invalidate();
+            return ResponseEntity.status(401).body("Nem vagy belépve");
         }
         if (notesRepository.createNote(username, note)) {
-           return ResponseEntity.ok("ok");
+            return ResponseEntity.ok("ok");
         } else {
             return ResponseEntity.status(500).body("Internal Error");
         }
 
     }
 
-    public ResponseEntity<?> jegyzet_lekérés(HttpSession session)
-    {
-        String username=(String)session.getAttribute("user");
-        if (username==null){
+    public ResponseEntity<?> jegyzet_lekérés(HttpSession session) {
+        String username = (String) session.getAttribute("user");
+
+        if (!letezo_user(username)) {
+            session.invalidate();
             return ResponseEntity.status(401).body("Nincs jogosultásgod megtekinteni mivel nem vagy belépve!");
-        }else{
-            List<String> notes =notesRepository.getNotes(username);
+        } else {
+            List<String> notes = notesRepository.getNotes(username);
             return ResponseEntity.ok(notes);
         }
 
     }
 
-
-    public ResponseEntity<?> jegyezttörlés_adatbázisbol(HttpSession session,List<String> notes){
+    public ResponseEntity<?> jegyezttörlés_adatbázisbol(HttpSession session, List<String> notes) {
 
         String user = (String) session.getAttribute("user");
 
@@ -56,15 +66,15 @@ public class NotesService {
             return ResponseEntity.ok("Törlés sikeres");
 
         } else {
-            return  ResponseEntity.status(500).body("Internal error");
+            return ResponseEntity.status(500).body("Internal error");
         }
     }
 
-    public List<Users> getAlluserwithNotes(){
+    public List<Users> felhasznalok_jegyzetek_listazasa() {
 
-        List<Users> users= notesRepository.findAll_user();
+        List<Users> users = userRepository.findAllUsers();
 
-        for (Users user: users){
+        for (Users user : users) {
 
             user.setNotes(notesRepository.getNotes(user.getUsername()));
         }

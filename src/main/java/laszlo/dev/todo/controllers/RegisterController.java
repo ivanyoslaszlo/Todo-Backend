@@ -33,7 +33,7 @@ public class RegisterController {
     public String register_user(@RequestBody Users users) {
 
         if (userService.registerUser(users)) {
-            emailService.sendEmail(users.getEmail(), users.getUsername());
+            emailService.sendRegistrationEmail(users.getEmail(), users.getUsername());
             return "siker";
         } else {
             return "foglalt";
@@ -43,9 +43,9 @@ public class RegisterController {
     }
 
     @PostMapping("/reset_password")
-    public ResponseEntity<?> reset_password(@RequestBody Map<String, String> data, HttpSession session) {
+    public ResponseEntity<?> change_password(@RequestBody Map<String, String> data, HttpSession session) {
 
-        String logged_in_user=(String) session.getAttribute("user");
+        String logged_in_user = (String) session.getAttribute("user");
         String password = data.get("password");
 
         if (logged_in_user == null) {
@@ -53,10 +53,29 @@ public class RegisterController {
         }
 
         if (userService.reset_password(logged_in_user, password)) {
-            return ResponseEntity.ok("Sikeres jelszó reset");
+            return ResponseEntity.ok("Sikeres jelszó modosítás");
         } else {
             return ResponseEntity.status(500).body("Hiba");
         }
+
+    }
+
+    @PostMapping("/delete_user")
+    public ResponseEntity<?> delete_user(HttpSession session) {
+        String username = (String) session.getAttribute("user");
+
+        if (username==null){
+            return ResponseEntity.status(403).body("nincs jogod törölni");
+        }
+
+        if (userService.delete_user(username)) {
+            session.invalidate();
+            return ResponseEntity.ok().body("User törölve");
+        }
+        else{
+            return  ResponseEntity.status(500).body("Internal Error");
+        }
+
 
     }
 
