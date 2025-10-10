@@ -5,6 +5,8 @@ import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.repository.UserRepository;
 import laszlo.dev.todo.service.EmailService;
 import laszlo.dev.todo.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class RegisterController {
-
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     UserService userService;
     EmailService emailService;
     UserRepository userRepository;
@@ -34,8 +36,10 @@ public class RegisterController {
 
         if (userService.registerUser(users)) {
             emailService.sendRegistrationEmail(users.getEmail(), users.getUsername());
+            logger.info(users.getUsername()+" sikeresen regisztrált");
             return "siker";
         } else {
+            logger.warn("foglalt felhasználó névvel probálkoztak: "+users.getUsername());
             return "foglalt";
         }
 

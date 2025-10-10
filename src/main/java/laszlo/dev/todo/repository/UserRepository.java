@@ -26,6 +26,16 @@ public class UserRepository {
         return DriverManager.getConnection(url, username, password);
     }
 
+    public boolean testconnection(){
+
+        try{
+           Connection connection= getConnection();
+           return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
     public boolean isbanned(String username) {
 
 
@@ -109,7 +119,7 @@ public class UserRepository {
     }
 
     public List<Users> findAllUsers() {
-        String sql = "SELECT username, email, role, registered_at, last_login FROM users";
+        String sql = "SELECT username, email, role, registered_at, last_login,isbanned FROM users";
         List<Users> users = new ArrayList<>();
 
         try (Connection connection = getConnection();
@@ -123,6 +133,7 @@ public class UserRepository {
                 user.setRole(rs.getString("role"));
                 user.setRegisteredAt(rs.getString("registered_at"));
                 user.setLastLogin(rs.getString("last_login"));
+                user.setIsbanned(rs.getBoolean("isbanned"));
                 users.add(user);
             }
         } catch (SQLException e) {

@@ -3,10 +3,15 @@ package laszlo.dev.todo;
 import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.repository.NotesRepository;
 import laszlo.dev.todo.repository.UserRepository;
+import laszlo.dev.todo.service.Mylogger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +24,8 @@ class TodoApplicationTests {
 
     @Autowired
     private NotesRepository notesRepository;
-
+    @Autowired
+    private Mylogger mylogger;
     /*@Test
     void user_delete(){
         boolean result= userRepository.delete_users("Misi");
@@ -65,7 +71,7 @@ void testGetNotes() {
     assertTrue(notes.contains("nyolcadik jegyzet"));
 
 
-     */
+
     @Test
     void ban() {
         String username ="laci";
@@ -80,6 +86,26 @@ void testGetNotes() {
         userRepository.unbanusers(username);
 
     }
+
+     */
+
+    @Test
+    void log() {
+
+
+        String text = "ez itt egy warn log";
+
+        try {
+            boolean result = mylogger.warn(text);
+            assertTrue(result, "Hiba");
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            fail("Kivétel történt: " + e.getMessage());
+        }
+    }
+
+
 
 
 }

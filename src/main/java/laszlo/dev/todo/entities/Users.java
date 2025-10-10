@@ -11,13 +11,14 @@ public class Users {
     private String role;
     private String registeredAt;
     private String lastLogin;
+    private boolean isbanned;
     private List<String> notes;
 
     public Users() {
 
     }
 
-    public Users(String username, String password, String email, String role, String registeredAt, String lastLogin, List<String> notes) {
+    public Users(String username, String password, String email, String role, String registeredAt, String lastLogin, List<String> notes,Boolean isbanned) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -25,6 +26,15 @@ public class Users {
         this.registeredAt = registeredAt;
         this.lastLogin = lastLogin;
         this.notes = notes;
+        this.isbanned=isbanned;
+    }
+
+    public boolean isIsbanned() {
+        return isbanned;
+    }
+
+    public void setIsbanned(boolean isbanned) {
+        this.isbanned = isbanned;
     }
 
     public void setRegisteredAt(String registeredAt) {

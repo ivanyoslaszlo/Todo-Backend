@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,7 @@ import java.util.Map;
 
 public class LoginController {
 
-
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserService userService;
 
     public LoginController(UserService userService) {
@@ -35,7 +37,7 @@ public class LoginController {
 
 
         if ("Nincs ilyen felhasználó!".equals(result)) {
-
+            logger.warn("Nem létező felhasználóval akartak belépni: "+username);
             return ResponseEntity.status(404).body(Map.of("message", "Nincs ilyen felhasználó!"));
 
         } else if (userService.checkIfBanned(username))
@@ -66,9 +68,11 @@ public class LoginController {
     }
 
 
-    @PostMapping("/kilepes")
+    @PostMapping("/logout")
     public ResponseEntity<?> logoutMethod(HttpSession session) {
-        System.out.println("Kilépet: "+session.getAttribute("user")+ LocalDateTime.now().withNano(0));
+
+        logger.info("Kilépet: "+session.getAttribute("user")+ LocalDateTime.now().withNano(0));
+
         session.invalidate();
         return ResponseEntity.ok(Map.of("message", "Sikeres kilépés"));
     }

@@ -3,6 +3,8 @@ package laszlo.dev.todo.service;
 import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,35 +13,28 @@ import java.time.LocalDateTime;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
-
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    Mylogger logger;
     @Autowired
     EmailService emailService;
 
-    public boolean checkIfBanned(String username){
+    public boolean checkIfBanned(String username) {
 
-        if (userRepository.isbanned(username)){
-            return true;
-        }
-        else{
-            return false;
-        }
+       return (userRepository.isbanned(username));
     }
 
     public void banuser(String username, String action) {
 
-        if (action.equals("ban")){
+        if (action.equals("ban")) {
             userRepository.bannusers(username);
 
-        }else if(action.equals("unban"))
-        {
+        } else if (action.equals("unban")) {
             userRepository.unbanusers(username);
         }
     }
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public boolean registerUser(Users user) {
         if (user.getUsername() == null || user.getUsername().trim().isEmpty() ||
@@ -63,16 +58,17 @@ public class UserService {
         Users user = userRepository.findByUsername(username);
 
         if (user == null) {
+
             return "Nincs ilyen felhasználó!";
 
         } else if (!userRepository.check_password(password, user.getPassword())) {
-
+            logger.warn(username + " hibás jelszot adott meg!");
             return "Hibás jelszó!";
         } else if (userRepository.check_password(password, user.getPassword())) {
 
             session.setAttribute("user", user.getUsername());
             session.setAttribute("login_time", LocalDateTime.now().withNano(0));
-            System.out.println("Bejelentkezett: " + user.getUsername() + " " + session.getAttribute("login_time"));
+            logger.info("Belépett: " + session.getAttribute("user") + " " + session.getAttribute("login_time"));
             userRepository.updateLastLogin(user.getUsername());
 
         }
@@ -86,11 +82,7 @@ public class UserService {
 
     public boolean reset_password(String username, String password) {
 
-        if (userRepository.reset_password(username, password)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (userRepository.reset_password(username, password));
 
     }
 

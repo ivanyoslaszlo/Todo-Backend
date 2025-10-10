@@ -20,12 +20,12 @@ public class NotesRepository {
 
     private Connection getConnection() throws SQLException {
 
-         final String url = "jdbc:mysql://localhost:3306/user_datas";
-         String username = "laci";
-         String password = "laci";
-
+        final String url = "jdbc:mysql://localhost:3306/user_datas";
+        String username = "laci";
+        String password = "laci";
         return DriverManager.getConnection(url, username, password);
     }
+
 
 
     public boolean createNote(String username, String content) {

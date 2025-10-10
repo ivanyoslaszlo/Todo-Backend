@@ -17,14 +17,8 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    public SecurityConfig() {
-        System.out.println(">>> SecurityConfig betöltve <<<");
-    }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> null;
-    }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,7 +37,8 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5500",
-                "https://ivanyoslaszlo.hu"
+                "https://ivanyoslaszlo.hu",
+                "https://www.ivanyoslaszlo.hu"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
