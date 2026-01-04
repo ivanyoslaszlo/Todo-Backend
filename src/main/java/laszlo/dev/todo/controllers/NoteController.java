@@ -1,6 +1,7 @@
 package laszlo.dev.todo.controllers;
 
 import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import laszlo.dev.todo.repository.NotesRepository;
 import laszlo.dev.todo.service.NotesService;
@@ -44,9 +45,9 @@ public class NoteController {
 
 
     @GetMapping("/note")
-    public ResponseEntity<?> jegyzet_lekeres(HttpSession session) {
+    public ResponseEntity<?> jegyzet_lekeres(HttpSession session, HttpServletRequest request) {
 
-        return notesService.jegyzet_lekérés(session);
+        return notesService.jegyzet_lekérés(session,request);
     }
 
 

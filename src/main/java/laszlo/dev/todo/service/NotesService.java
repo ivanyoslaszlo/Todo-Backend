@@ -1,5 +1,6 @@
 package laszlo.dev.todo.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.repository.NotesRepository;
@@ -18,8 +19,8 @@ public class NotesService {
     NotesRepository notesRepository;
     @Autowired
     UserRepository userRepository;
-
-
+    @Autowired
+    Mylogger logger;
 
 
     public boolean letezo_user(String username) {
@@ -35,6 +36,7 @@ public class NotesService {
             return ResponseEntity.status(401).body("Nem vagy belépve");
         }
         if (notesRepository.createNote(username, note)) {
+            logger.info(username +" létrehozta ezt a jegyzetet: "+note);
             return ResponseEntity.ok("ok");
         } else {
             return ResponseEntity.status(500).body("Internal Error");
@@ -42,11 +44,13 @@ public class NotesService {
 
     }
 
-    public ResponseEntity<?> jegyzet_lekérés(HttpSession session) {
+    public ResponseEntity<?> jegyzet_lekérés(HttpSession session, HttpServletRequest request) {
         String username = (String) session.getAttribute("user");
 
         if (!letezo_user(username)) {
+           String ip= request.getRemoteAddr();
             session.invalidate();
+            logger.warn("jogosulatlan hozzáférési kisérlet: "+ ip);
             return ResponseEntity.status(401).body("Nincs jogosultásgod megtekinteni mivel nem vagy belépve!");
         } else {
             List<String> notes = notesRepository.getNotes(username);
@@ -64,6 +68,7 @@ public class NotesService {
 
         } else if (notesRepository.deleteNotes(notes, user)) {
 
+            logger.info(user+" törölte ezt a jegyzetet: "+ notes);
             return ResponseEntity.ok("Törlés sikeres");
 
         } else {
@@ -80,7 +85,7 @@ public class NotesService {
             user.setNotes(notesRepository.getNotes(user.getUsername()));
 
         }
-        users.removeIf(user ->user.getRole().equalsIgnoreCase("admin"));
+        users.removeIf(user -> user.getRole().equalsIgnoreCase("admin"));
         return users;
     }
 

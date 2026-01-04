@@ -22,7 +22,7 @@ public class UserRepository {
 
         final String url = "jdbc:mysql://localhost:3306/user_datas";
         String username = "laci";
-        String password = "laci";
+        String password = System.getenv("MYSQL_PASSWORD");
         return DriverManager.getConnection(url, username, password);
     }
 

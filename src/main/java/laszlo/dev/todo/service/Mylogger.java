@@ -1,5 +1,6 @@
 package laszlo.dev.todo.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -8,10 +9,14 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+
 @Service
 public class Mylogger {
 
-    private File dir = new File("mylogs");
+    @Autowired
+    Time time;
+
+    File dir = new File(System.getProperty("user.dir") + "/mylogs");
 
     public Mylogger() {
 
@@ -26,12 +31,7 @@ public class Mylogger {
         try {
 
             FileWriter writer= new FileWriter(new File(dir,filename),true);
-
-            LocalDateTime originalTime = LocalDateTime.now();
-            DateTimeFormatter formatter= DateTimeFormatter.ofPattern("dd-MM-yyyy_HH:mm:ss");
-            String formatedDate=formatter.format(originalTime);
-
-            writer.write(formatedDate+" - "+content+"\n");
+            writer.write(time.getTime()+" - "+content+"\n");
             writer.close();
             return true;
         } catch (IOException e) {
@@ -59,5 +59,10 @@ public class Mylogger {
         return writer("error.log",error);
 
 
+    }
+
+    public boolean adminlog(String adminlog){
+
+        return  writer("admin.log",adminlog);
     }
 }

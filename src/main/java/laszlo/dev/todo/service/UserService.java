@@ -1,10 +1,10 @@
 package laszlo.dev.todo.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class UserService {
 
     public boolean checkIfBanned(String username) {
 
-       return (userRepository.isbanned(username));
+        return (userRepository.isbanned(username));
     }
 
     public void banuser(String username, String action) {
@@ -49,26 +49,38 @@ public class UserService {
 
         user.setPassword(userRepository.password_hash(user.getPassword()));
         userRepository.register_user(user);
+        logger.info(user.getUsername()+" regisztrált");
 
         return true;
     }
 
-    public String loginUser(String username, String password, HttpSession session) {
+    public String loginUser(String username, String password, HttpSession session, HttpServletRequest request) {
 
         Users user = userRepository.findByUsername(username);
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
 
         if (user == null) {
 
             return "Nincs ilyen felhasználó!";
 
         } else if (!userRepository.check_password(password, user.getPassword())) {
+
             logger.warn(username + " hibás jelszot adott meg!");
             return "Hibás jelszó!";
+
         } else if (userRepository.check_password(password, user.getPassword())) {
 
             session.setAttribute("user", user.getUsername());
-            session.setAttribute("login_time", LocalDateTime.now().withNano(0));
-            logger.info("Belépett: " + session.getAttribute("user") + " " + session.getAttribute("login_time"));
+            logger.info(session.getAttribute("user") + " belépett"+" IP: "+ip);
             userRepository.updateLastLogin(user.getUsername());
 
         }
@@ -82,8 +94,12 @@ public class UserService {
 
     public boolean reset_password(String username, String password) {
 
-        return (userRepository.reset_password(username, password));
+        if (userRepository.reset_password(username, password)) {
 
+            logger.info(username + " megváltoztatta a jelszavát");
+            return true;
+        }
+        return false;
     }
 
 
@@ -93,6 +109,7 @@ public class UserService {
 
         if (userRepository.delete_users(username)) {
             emailService.sendDeletedAccountemail(user.getEmail(), username);
+            logger.info(username + " törölte a fiókját");
             return true;
         } else {
             return false;

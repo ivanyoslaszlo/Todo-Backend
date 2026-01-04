@@ -1,6 +1,7 @@
 target/
 build/
 out/
+src/main/resources/static/
 *.class
 *.jar
 *.war

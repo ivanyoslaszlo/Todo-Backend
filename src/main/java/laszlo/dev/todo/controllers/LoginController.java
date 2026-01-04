@@ -2,6 +2,7 @@ package laszlo.dev.todo.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import laszlo.dev.todo.entities.Users;
+import laszlo.dev.todo.service.Mylogger;
 import laszlo.dev.todo.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -20,19 +21,19 @@ import java.util.Map;
 
 public class LoginController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-    private final UserService userService;
+    @Autowired
+    Mylogger logger;
+    @Autowired
+     UserService userService;
 
-    public LoginController(UserService userService) {
-        this.userService = userService;
-    }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> loginMethod(@RequestBody Map<String, String> payload, HttpSession session, HttpServletRequest request) {
         String username = payload.get("username");
         String password = payload.get("password");
 
-        String result = userService.loginUser(username, password, session);
+        String result = userService.loginUser(username, password, session,request);
 
 
 
@@ -42,7 +43,9 @@ public class LoginController {
 
         } else if (userService.checkIfBanned(username))
         {
+            logger.warn("Letiltott felhasználó akart belépni: "+username);
             return ResponseEntity.status(403).body(Map.of("message","A fiókód levan titlva"));
+
 
         }
 
@@ -71,7 +74,7 @@ public class LoginController {
     @PostMapping("/logout")
     public ResponseEntity<?> logoutMethod(HttpSession session) {
 
-        logger.info("Kilépet: "+session.getAttribute("user")+ LocalDateTime.now().withNano(0));
+        logger.info(session.getAttribute("user")+" kilépett");
 
         session.invalidate();
         return ResponseEntity.ok(Map.of("message", "Sikeres kilépés"));
