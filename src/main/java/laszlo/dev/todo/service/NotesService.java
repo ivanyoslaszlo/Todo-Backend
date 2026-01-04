@@ -23,15 +23,15 @@ public class NotesService {
     Mylogger logger;
 
 
-    public boolean letezo_user(String username) {
+    public boolean isExistUser(String username) {
         return username != null && userRepository.findByUsername(username) != null;
     }
 
-    public ResponseEntity<?> jegyzet_keszites(String note, HttpSession session) {
+    public ResponseEntity<?> createNotes(String note, HttpSession session) {
 
         String username = (String) session.getAttribute("user");
 
-        if (!letezo_user(username)) {
+        if (!isExistUser(username)) {
             session.invalidate();
             return ResponseEntity.status(401).body("Nem vagy belépve");
         }
@@ -44,10 +44,10 @@ public class NotesService {
 
     }
 
-    public ResponseEntity<?> jegyzet_lekérés(HttpSession session, HttpServletRequest request) {
+    public ResponseEntity<?> getNotes(HttpSession session, HttpServletRequest request) {
         String username = (String) session.getAttribute("user");
 
-        if (!letezo_user(username)) {
+        if (!isExistUser(username)) {
            String ip= request.getRemoteAddr();
             session.invalidate();
             logger.warn("jogosulatlan hozzáférési kisérlet: "+ ip);
@@ -59,7 +59,7 @@ public class NotesService {
 
     }
 
-    public ResponseEntity<?> jegyezttörlés_adatbázisbol(HttpSession session, List<String> notes) {
+    public ResponseEntity<?> deleteNotes(HttpSession session, List<String> notes) {
 
         String user = (String) session.getAttribute("user");
 
@@ -76,17 +76,14 @@ public class NotesService {
         }
     }
 
-    public List<Users> felhasznalok_jegyzetek_listazasa() {
+    public List<Users> getUserNotesWithoutAdmin() {
 
-        List<Users> users = userRepository.findAllUsers();
 
-        for (Users user : users) {
+        return userRepository.findAllUsers().stream()
+                .filter(user->!user.getRole().equalsIgnoreCase("admin"))
+                .peek(user->user.setNotes(notesRepository.getNotes(user.getUsername())))
+                .toList();
 
-            user.setNotes(notesRepository.getNotes(user.getUsername()));
-
-        }
-        users.removeIf(user -> user.getRole().equalsIgnoreCase("admin"));
-        return users;
     }
 
 }

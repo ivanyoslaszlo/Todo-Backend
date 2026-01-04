@@ -9,7 +9,6 @@ import laszlo.dev.todo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +37,7 @@ public class AdminController {
 
         } else {
 
-            List<Users> users = notesService.felhasznalok_jegyzetek_listazasa();
+            List<Users> users = notesService.getUserNotesWithoutAdmin();
 
             return ResponseEntity.ok().body(users);
 
