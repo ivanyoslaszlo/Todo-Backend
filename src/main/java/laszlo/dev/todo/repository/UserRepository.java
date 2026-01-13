@@ -189,7 +189,7 @@ public class UserRepository {
             preparedStatement.setString(2, username);
 
             int modositott_sorok = preparedStatement.executeUpdate();
-            ;
+
 
             return modositott_sorok > 0;
         } catch (SQLException exception) {

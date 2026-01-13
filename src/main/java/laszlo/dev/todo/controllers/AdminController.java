@@ -51,9 +51,9 @@ public class AdminController {
     @PostMapping("/ban")
     public ResponseEntity<?> userBan(@RequestBody Map<String, String> request, HttpSession session) {
 
-        String isAdmin = (String) session.getAttribute("user");
 
-        if (!isAdmin.equals("admin")) {
+
+        if (!userRepository.is_admin(session)) {
             return ResponseEntity.status(403).body("Hozzá férés megtagadva!");
         } else {
 
