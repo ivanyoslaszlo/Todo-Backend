@@ -1,0 +1,25 @@
+# Todo Web Application – Backend
+
+A full-stack web application backend that allows users to register, login, and  manage their personal tasks.
+
+## Features
+
+- User registration and login with secure password hashing 
+- CRUD operations for notes
+- REST API for frontend integration
+- Session management using HttpSession
+
+## Technologies
+
+- Java 
+- Spring Boot
+- MySQL
+- REST API
+
+## Frontend
+
+The frontend repository is available here: https://github.com/ivanyoslaszlo/Todo-Frontend.git
+
+## Deployment
+
+The live application is available at: https://ivanyoslaszlo.hu
