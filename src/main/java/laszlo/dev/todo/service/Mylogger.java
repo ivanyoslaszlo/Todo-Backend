@@ -8,14 +8,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-
 @Service
 public class Mylogger {
 
     @Autowired
     Time time;
-
     File dir = new File(System.getProperty("user.dir") + "/mylogs");
 
     public Mylogger() {
@@ -25,8 +22,6 @@ public class Mylogger {
         }
 
     }
-
-
     public boolean writer (String filename,String content){
         try {
 
@@ -35,34 +30,23 @@ public class Mylogger {
             writer.close();
             return true;
         } catch (IOException e) {
-            System.out.println("Hiba a file irásakor!");
+            System.out.println("Error while writing file.");
             return false;
         }
-
     }
-
     public boolean info(String info) {
-
         return writer("info.log",info);
-
     }
 
     public boolean warn(String warn) {
-
      return writer("warn.log",warn);
-
-
     }
 
     public boolean error(String error){
-
         return writer("error.log",error);
-
-
     }
 
     public boolean adminlog(String adminlog){
-
         return  writer("admin.log",adminlog);
     }
 }

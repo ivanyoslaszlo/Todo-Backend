@@ -18,11 +18,6 @@ public class NotesRepository {
     UserRepository userRepository;
     @Autowired
     ConnectionManager connectionManager;
-
-
-
-
-
     public boolean createNote(String username, String content) {
         String sql = "INSERT INTO notes (content, user_id) VALUES (?, ?)";
         try (Connection connection = connectionManager.getConnection();
@@ -35,11 +30,8 @@ public class NotesRepository {
                 return true;
             }
 
-
         } catch (SQLException e) {
-            System.out.println("Hiba a jegyzet mentése közben: " + e.getMessage());
-
-
+            System.out.println("Error while saving:" + e.getMessage());
         }
         return false;
     }
@@ -62,9 +54,7 @@ public class NotesRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
         return notes;
-
     }
 
     public boolean deleteNotes(List<String> contents, String username) {
@@ -73,7 +63,6 @@ public class NotesRepository {
         String sql = "DELETE FROM notes WHERE user_id = ? AND content = ?";
 
         int totalDeleted = 0;
-
 
         try (Connection connection = connectionManager.getConnection()) {
             for (String content : contents) {
@@ -84,17 +73,15 @@ public class NotesRepository {
                 }
             }
             if (totalDeleted > 0) {
-                System.out.println("Sikeresen törölve: " + totalDeleted);
+                System.out.println("Successfully deleted" + totalDeleted);
                 return true;
             } else {
-                System.out.println("Nem történt törlés");
+                System.out.println("Error while deleting");
             }
             return false;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
-
 
 }

@@ -3,6 +3,7 @@ package laszlo.dev.todo;
 import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.repository.NotesRepository;
 import laszlo.dev.todo.repository.UserRepository;
+import laszlo.dev.todo.service.EmailService;
 import laszlo.dev.todo.service.Mylogger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ class TodoApplicationTests {
     private NotesRepository notesRepository;
     @Autowired
     private Mylogger mylogger;
+    @Autowired
+    private EmailService emailService;
     /*@Test
     void user_delete(){
         boolean result= userRepository.delete_users("Misi");
@@ -106,7 +109,10 @@ void testGetNotes() {
     }
 
 
-
+  @Test
+    void test(){
+        emailService.sendRegistrationEmail("ivanyoslaszlo25@gmail.com","Laci");
+  }
 
 }
 

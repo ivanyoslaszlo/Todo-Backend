@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
-
 @Repository
 public class UserRepository {
 
@@ -23,13 +21,9 @@ public class UserRepository {
     ConnectionManager connectionManager;
     private String sql = "";
 
-
-
     public boolean testconnection(){
-
         try{
            Connection connection= connectionManager.getConnection();
-
            return true;
         } catch (SQLException e) {
             mylogger.error(e.getMessage());
@@ -38,7 +32,6 @@ public class UserRepository {
     }
 
     public boolean isbanned(String username) {
-
 
         String sql = "select isbanned from users where username=?";
         try {
@@ -53,10 +46,6 @@ public class UserRepository {
             else {
                 return false;
             }
-
-
-
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -83,7 +72,6 @@ public class UserRepository {
         try {
             Connection connection = connectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
             preparedStatement.setString(1, username);
             preparedStatement.executeUpdate();
             return true;
@@ -96,7 +84,6 @@ public class UserRepository {
     public int get_userID(String username) {
 
         String sql = "select id from users where username=?";
-
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
@@ -110,13 +97,9 @@ public class UserRepository {
 
                 return -1;
             }
-
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     public List<Users> findAllUsers() {
@@ -191,11 +174,9 @@ public class UserRepository {
 
             int modositott_sorok = preparedStatement.executeUpdate();
 
-
             return modositott_sorok > 0;
         } catch (SQLException exception) {
             System.out.println(exception);
-
             throw new RuntimeException();
         }
     }
@@ -226,11 +207,8 @@ public class UserRepository {
         } catch (SQLException e) {
 
             throw new RuntimeException(e);
-
         }
-
     }
-
     public Users findByUsername(String username) {
         String sql = "SELECT username, email, password FROM users WHERE username=?";
         try (Connection connection = connectionManager.getConnection();
@@ -253,8 +231,6 @@ public class UserRepository {
         }
         return null;
     }
-
-
     public boolean is_admin(HttpSession session) {
         String username = (String) session.getAttribute("user");
         try (

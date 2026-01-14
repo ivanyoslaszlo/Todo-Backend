@@ -6,18 +6,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
-
-
-
-
         private final JavaMailSender mailSender;
 
         public EmailService(JavaMailSender mailSender) {
             this.mailSender = mailSender;
         }
-
-
-
         private void send_Email(String to,String subject,String text){
 
             SimpleMailMessage message=new SimpleMailMessage();
@@ -27,9 +20,9 @@ public class EmailService {
             message.setText(text);
             try {
                 mailSender.send(message);
-                System.out.println("Email kiküldve!");
+                System.out.println("Email sent!");
             }catch (Exception e){
-                System.out.println("hiba az email küldésekor: "+e);
+                System.out.println("Error: "+e);
             }
         }
 
@@ -65,9 +58,9 @@ public class EmailService {
 
             try {
                 mailSender.send(message);
-                System.out.println("email kiküldve");
+                System.out.println("Email sent!");
             }catch (Exception e){
-                System.out.println("hiba az email küldésekor: "+e);
+                System.out.println("Error: "+e);
             }
         }
 
