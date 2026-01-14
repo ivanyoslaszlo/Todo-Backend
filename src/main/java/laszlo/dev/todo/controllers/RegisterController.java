@@ -33,18 +33,21 @@ public class RegisterController {
 
     @PostMapping("/register")
     public String register_user(@RequestBody Users users) {
-
         if (userService.registerUser(users)) {
-            emailService.sendRegistrationEmail(users.getEmail(), users.getUsername());
+            try {
+                emailService.sendRegistrationEmail(users.getEmail(), users.getUsername());
+            } catch (Exception e) {
+                logger.error("Hiba az email küldésekor: " + e.getMessage());
+
+            }
             logger.info(users.getUsername()+" sikeresen regisztrált");
             return "siker";
         } else {
-            logger.warn("foglalt felhasználó névvel probálkoztak: "+users.getUsername());
+            logger.warn("foglalt felhasználó névvel probálkoztak: " + users.getUsername());
             return "foglalt";
         }
-
-
     }
+
 
     @PostMapping("/reset_password")
     public ResponseEntity<?> change_password(@RequestBody Map<String, String> data, HttpSession session) {
