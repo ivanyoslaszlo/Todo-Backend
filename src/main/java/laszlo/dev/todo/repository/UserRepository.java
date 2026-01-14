@@ -2,6 +2,8 @@ package laszlo.dev.todo.repository;
 
 import jakarta.servlet.http.HttpSession;
 import laszlo.dev.todo.entities.*;
+import laszlo.dev.todo.service.Mylogger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
@@ -15,23 +17,22 @@ import java.util.List;
 @Repository
 public class UserRepository {
 
-
+    @Autowired
+    Mylogger mylogger;
+    @Autowired
+    ConnectionManager connectionManager;
     private String sql = "";
 
-    private Connection getConnection() throws SQLException {
 
-        final String url = "jdbc:mysql://localhost:3306/user_datas";
-        String username = "laci";
-        String password = System.getenv("MYSQL_PASSWORD");
-        return DriverManager.getConnection(url, username, password);
-    }
 
     public boolean testconnection(){
 
         try{
-           Connection connection= getConnection();
+           Connection connection= connectionManager.getConnection();
+
            return true;
         } catch (SQLException e) {
+            mylogger.error(e.getMessage());
             return false;
         }
     }
@@ -41,7 +42,7 @@ public class UserRepository {
 
         String sql = "select isbanned from users where username=?";
         try {
-            Connection connection = getConnection();
+            Connection connection = connectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -65,7 +66,7 @@ public class UserRepository {
 
         String sql = "update  users set isbanned =true where username =?";
         try {
-            Connection connection = getConnection();
+            Connection connection = connectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setString(1, username);
@@ -80,7 +81,7 @@ public class UserRepository {
     public boolean unbanusers(String username) {
         String sql = "update  users set isbanned =false where username =?";
         try {
-            Connection connection = getConnection();
+            Connection connection = connectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setString(1, username);
@@ -96,7 +97,7 @@ public class UserRepository {
 
         String sql = "select id from users where username=?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, username);
@@ -122,7 +123,7 @@ public class UserRepository {
         String sql = "SELECT username, email, role, registered_at, last_login,isbanned FROM users";
         List<Users> users = new ArrayList<>();
 
-        try (Connection connection = getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -144,7 +145,7 @@ public class UserRepository {
 
     public boolean check_username(String username) {
         String sql = "SELECT username FROM users WHERE username=?";
-        try (Connection conn = getConnection();
+        try (Connection conn = connectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
@@ -158,7 +159,7 @@ public class UserRepository {
     public void register_user(Users user) {
         String insertsql = "INSERT INTO users(username,email,password,registered_at) VALUES(?,?,?,?)";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(insertsql)) {
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getEmail());
@@ -179,7 +180,7 @@ public class UserRepository {
     public boolean reset_password(String username, String password) {
         String sql = "update users set password=? where username =?";
         try (
-                Connection connection = getConnection();
+                Connection connection = connectionManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
         ) {
@@ -213,7 +214,7 @@ public class UserRepository {
         String sql = "delete from users where username =?";
         try (
 
-                Connection connection = getConnection();
+                Connection connection = connectionManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
         ) {
@@ -232,7 +233,7 @@ public class UserRepository {
 
     public Users findByUsername(String username) {
         String sql = "SELECT username, email, password FROM users WHERE username=?";
-        try (Connection connection = getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, username);
@@ -257,7 +258,7 @@ public class UserRepository {
     public boolean is_admin(HttpSession session) {
         String username = (String) session.getAttribute("user");
         try (
-                Connection connection = getConnection();
+                Connection connection = connectionManager.getConnection();
 
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT role from users WHERE username=?")
         ) {
@@ -285,7 +286,7 @@ public class UserRepository {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        try (Connection connection = getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, now.format(formatter));
             ps.setString(2, username);

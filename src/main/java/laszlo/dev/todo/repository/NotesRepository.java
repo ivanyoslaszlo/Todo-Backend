@@ -16,21 +16,16 @@ public class NotesRepository {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ConnectionManager connectionManager;
 
 
-    private Connection getConnection() throws SQLException {
-
-        final String url = "jdbc:mysql://localhost:3306/user_datas";
-        String username = "laci";
-        String password = System.getenv("MYSQL_PASSWORD");
-        return DriverManager.getConnection(url, username, password);
-    }
 
 
 
     public boolean createNote(String username, String content) {
         String sql = "INSERT INTO notes (content, user_id) VALUES (?, ?)";
-        try (Connection connection = getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, content);
             ps.setInt(2, userRepository.get_userID(username));
@@ -56,7 +51,7 @@ public class NotesRepository {
 
         String sql = "SELECT content FROM notes WHERE user_id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -80,7 +75,7 @@ public class NotesRepository {
         int totalDeleted = 0;
 
 
-        try (Connection connection = getConnection()) {
+        try (Connection connection = connectionManager.getConnection()) {
             for (String content : contents) {
                 try (PreparedStatement ps = connection.prepareStatement(sql)) {
                     ps.setInt(1, id);
