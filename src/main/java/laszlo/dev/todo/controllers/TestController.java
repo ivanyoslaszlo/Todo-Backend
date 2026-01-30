@@ -12,12 +12,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
 @RestController
-
 @RequestMapping("/api")
 public class TestController {
-
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -25,8 +22,6 @@ public class TestController {
 
     @GetMapping("/ping")
     public ResponseEntity<?> ping() {
-
-        mylogger.info("Logger is working");
 
         Map<String, String> ping = new LinkedHashMap<>();
         ping.put("Backend", "Running");

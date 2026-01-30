@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
-
-
 @RestController
 @RequestMapping("/api")
 public class RegisterController {
@@ -28,22 +26,24 @@ public class RegisterController {
         this.userService = userService;
         this.emailService = emailService;
         this.userRepository = userRepository;
-
     }
 
     @PostMapping("/register")
-    public String register_user(@RequestBody Users users) {
+    public String register_user(@RequestBody Users user) {
+        if (userService.registerUser(user)) {
 
-        if (userService.registerUser(users)) {
-            emailService.sendRegistrationEmail(users.getEmail(), users.getUsername());
-            logger.info(users.getUsername()+" sikeresen regisztrált");
-            return "siker";
+            logger.info(user.getUsername()+" successfully registered");
+            try {
+                emailService.sendRegistrationEmail(user.getEmail(),user.getUsername());
+                logger.info("Registration email sent to:"+user.getUsername());
+            }catch (Exception e){
+                logger.warn(e.getMessage());
+            }
+            return "success";
         } else {
-            logger.warn("foglalt felhasználó névvel probálkoztak: "+users.getUsername());
-            return "foglalt";
+            logger.warn("Attempted to register with an already taken username:  " + user.getUsername());
+            return "This username already taken";
         }
-
-
     }
 
     @PostMapping("/reset_password")
@@ -53,15 +53,13 @@ public class RegisterController {
         String password = data.get("password");
 
         if (logged_in_user == null) {
-            return ResponseEntity.status(401).body("Nem vagy bejelentkezve!");
+            return ResponseEntity.status(401).body("You need to login!");
         }
-
         if (userService.reset_password(logged_in_user, password)) {
-            return ResponseEntity.ok("Sikeres jelszó modosítás");
+            return ResponseEntity.ok("successfully password reset");
         } else {
-            return ResponseEntity.status(500).body("Hiba");
+            return ResponseEntity.status(500).body("error");
         }
-
     }
 
     @PostMapping("/delete_user")
@@ -69,19 +67,14 @@ public class RegisterController {
         String username = (String) session.getAttribute("user");
 
         if (username==null){
-            return ResponseEntity.status(403).body("nincs jogod törölni");
+            return ResponseEntity.status(403).body("permission denied");
         }
-
         if (userService.delete_user(username)) {
             session.invalidate();
-            return ResponseEntity.ok().body("User törölve");
+            return ResponseEntity.ok().body("User deleted");
         }
         else{
             return  ResponseEntity.status(500).body("Internal Error");
         }
-
-
     }
-
-
 }

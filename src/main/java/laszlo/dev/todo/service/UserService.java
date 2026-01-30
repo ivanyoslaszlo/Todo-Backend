@@ -49,7 +49,7 @@ public class UserService {
 
         user.setPassword(userRepository.password_hash(user.getPassword()));
         userRepository.register_user(user);
-        logger.info(user.getUsername()+" regisztrált");
+        logger.info(user.getUsername()+" registered");
 
         return true;
     }
@@ -70,19 +70,18 @@ public class UserService {
 
         if (user == null) {
 
-            return "Nincs ilyen felhasználó!";
+            return "USER_NOTFOUND";
 
         } else if (!userRepository.check_password(password, user.getPassword())) {
 
-            logger.warn(username + " hibás jelszot adott meg!");
-            return "Hibás jelszó!";
+            logger.warn(username + " typed wrong password");
+            return "WRONG_PASSWORD";
 
         } else if (userRepository.check_password(password, user.getPassword())) {
 
             session.setAttribute("user", user.getUsername());
-            logger.info(session.getAttribute("user") + " belépett"+" IP: "+ip);
+            logger.info(session.getAttribute("user") + " logged in"+" IP: "+ip);
             userRepository.updateLastLogin(user.getUsername());
-
         }
 
         if (userRepository.is_admin(session)) {
@@ -96,27 +95,24 @@ public class UserService {
 
         if (userRepository.reset_password(username, password)) {
 
-            logger.info(username + " megváltoztatta a jelszavát");
+            logger.info(username + " changed their password");
             return true;
         }
         return false;
     }
 
-
     public boolean delete_user(String username) {
-
         Users user = userRepository.findByUsername(username);
 
         if (userRepository.delete_users(username)) {
             emailService.sendDeletedAccountemail(user.getEmail(), username);
-            logger.info(username + " törölte a fiókját");
+            logger.info(username + " deleted their account");
             return true;
         } else {
             return false;
         }
 
     }
-
 
 }
 

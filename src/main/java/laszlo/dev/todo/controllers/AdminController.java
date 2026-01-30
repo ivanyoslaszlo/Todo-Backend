@@ -9,7 +9,6 @@ import laszlo.dev.todo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,36 +33,27 @@ public class AdminController {
 
         if (!userRepository.is_admin(session)) {
 
-            return ResponseEntity.status(403).body("Nem vagy admin nincs jogod lekérni!!");
+            return ResponseEntity.status(403).body("Permission denied");
 
         } else {
 
-            List<Users> users = notesService.felhasznalok_jegyzetek_listazasa();
+            List<Users> users = notesService.getNote();
 
             return ResponseEntity.ok().body(users);
-
         }
-
-
     }
-
 
     @PostMapping("/ban")
     public ResponseEntity<?> userBan(@RequestBody Map<String, String> request, HttpSession session) {
-
-
-
         if (!userRepository.is_admin(session)) {
-            return ResponseEntity.status(403).body("Hozzá férés megtagadva!");
+            return ResponseEntity.status(403).body("Permission denied");
         } else {
 
             String username = request.get("username");
             String action = request.get("action");
             userService.banuser(username, action);
-            return  ResponseEntity.ok(username+" felhasználó bannolva");
+            return  ResponseEntity.ok(username+" user banned");
 
         }
-
-
     }
 }

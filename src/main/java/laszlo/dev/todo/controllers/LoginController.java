@@ -1,83 +1,58 @@
 package laszlo.dev.todo.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import laszlo.dev.todo.entities.Users;
 import laszlo.dev.todo.service.Mylogger;
 import laszlo.dev.todo.service.UserService;
 import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RequestMapping("/api")
 @RestController
-
 public class LoginController {
-
     @Autowired
     Mylogger logger;
     @Autowired
-     UserService userService;
-
-
+    UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> loginMethod(@RequestBody Map<String, String> payload, HttpSession session, HttpServletRequest request) {
         String username = payload.get("username");
         String password = payload.get("password");
 
-        String result = userService.loginUser(username, password, session,request);
+        String result = userService.loginUser(username, password, session, request);
 
+        if ("USER_NOTFOUND".equals(result)) {
+            logger.warn("Login attempt with non-existent user: " + username);
+            return ResponseEntity.status(404).body(Map.of("message", "USER_NOTFOUND"));
 
+        } else if (userService.checkIfBanned(username)) {
+            logger.warn("Login attempt by blocked user:" + username);
+            return ResponseEntity.status(403).body(Map.of("message", "BLOCKED_ACCOUNT"));
 
-        if ("Nincs ilyen felhasználó!".equals(result)) {
-            logger.warn("Nem létező felhasználóval akartak belépni: "+username);
-            return ResponseEntity.status(404).body(Map.of("message", "Nincs ilyen felhasználó!"));
-
-        } else if (userService.checkIfBanned(username))
-        {
-            logger.warn("Letiltott felhasználó akart belépni: "+username);
-            return ResponseEntity.status(403).body(Map.of("message","A fiókód levan titlva"));
-
-
-        }
-
-        else if ("Hibás jelszó!".equals(result)) {
-
-            return ResponseEntity.status(401).body(Map.of("message", "Hibás jelszó!"));
+        } else if ("WRONG_PASSWORD".equals(result)) {
+            return ResponseEntity.status(401).body(Map.of("message", "WRONG_PASSWORD"));
 
         } else if (result.equals("user")) {
-
             return ResponseEntity.ok(Map.of("role", "user"));
 
         } else if (result.equals("admin")) {
-
             return ResponseEntity.ok(Map.of("role", "admin"));
 
-        } else{
-
-            return ResponseEntity.badRequest().body(Map.of("message", "Ismeretlen hiba"));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("message", "UNKNOWN_ERROR"));
         }
-
-
-
     }
-
-
     @PostMapping("/logout")
     public ResponseEntity<?> logoutMethod(HttpSession session) {
 
-        logger.info(session.getAttribute("user")+" kilépett");
+        logger.info(session.getAttribute("user") + " logged out");
 
         session.invalidate();
-        return ResponseEntity.ok(Map.of("message", "Sikeres kilépés"));
+        return ResponseEntity.ok(Map.of("message", "login success"));
     }
 
 
